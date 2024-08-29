@@ -80,7 +80,7 @@ int main(int argc, char *argv[]){
 #define ADD_CLIENT(buf, saddr, clientlen)                                      \
   if (clients.size < MAX_CLIENTS) {                                            \
     size_t slot;                                                               \
-    if (!get_free_slot(&clients, &slot)) {                                     \
+    if (!peer_get_free_slot(&clients, &slot)) {                                     \
       if (verbose)                                                             \
         logger("client limit is reached!\n");                                  \
       continue;                                                                \
@@ -156,10 +156,10 @@ int main(int argc, char *argv[]){
     }
 
     /* remove old connections */
-    timer_cleanup(&clients);
+    peer_timer_cleanup(&clients);
 
     /* skip if not unique */
-    if (!uniq_client(&clients, &(clientaddr.sin_addr)))
+    if (!peer_is_uniq_client(&clients, &(clientaddr.sin_addr)))
       continue;
 
     ADD_CLIENT(buf, clientaddr, len)

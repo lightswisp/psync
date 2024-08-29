@@ -10,7 +10,7 @@
 #include <peer.h>
 #include <show.h>
 
-bool uniq_client(clients_t *clients, struct in_addr *ip) {
+bool peer_is_uniq_client(clients_t *clients, struct in_addr *ip) {
   for (size_t i = 0; i < MAX_CLIENTS; i++) {
     if (memcmp(&clients->client[i].addr.sin_addr, ip, sizeof(struct in_addr)) == 0) {
       if (verbose)
@@ -23,7 +23,7 @@ bool uniq_client(clients_t *clients, struct in_addr *ip) {
   return true;
 }
 
-bool get_free_slot(clients_t *clients, size_t *slot) {
+bool peer_get_free_slot(clients_t *clients, size_t *slot) {
   for (size_t i = 0; i < MAX_CLIENTS; i++) {
     if (!clients->client[i].active) {
       *slot = i;
@@ -33,7 +33,7 @@ bool get_free_slot(clients_t *clients, size_t *slot) {
   return false;
 }
 
-void timer_cleanup(clients_t *clients) {
+void peer_timer_cleanup(clients_t *clients) {
   if (verbose)
     logger("timer_cleanup check\n");
 #define TIMER_LIMIT 10.0 // 10 seconds
