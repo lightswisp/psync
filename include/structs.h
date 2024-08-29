@@ -12,6 +12,7 @@ typedef struct {
 
 typedef struct {
   uint16_t src_port;
+  uint16_t dst_port;
   struct sockaddr_in dst_addr;
 } peer_data_t;
 

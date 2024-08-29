@@ -138,8 +138,8 @@ int main(int argc, char *argv[]){
       if (verbose)
         logger("peer1 port: %u | peer2 port: %u\n", port1, port2);
 
-      peer_data_t peer1 = {.src_port = port1, .dst_addr = clientaddr};
-      peer_data_t peer2 = {.src_port = port2, .dst_addr = other_peer->addr};
+      peer_data_t peer1 = {.src_port = port1, .dst_port = port2, .dst_addr = clientaddr};
+      peer_data_t peer2 = {.src_port = port2, .dst_port = port1, .dst_addr = other_peer->addr};
 
       sendto(sockfd, &peer1, sizeof(peer_data_t), 0,
              (struct sockaddr *)(&other_peer->addr), other_peer->len);
