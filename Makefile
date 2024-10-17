@@ -6,7 +6,7 @@ OUT=server.out
 DEBUG_FLAGS=-ggdb
 WARNING_FLAGS=-Wall -Werror -pedantic
 LIBS=-lm
-CFLAGS=-I$(INCLUDE_DIR) $(WARNING_FLAGS) $(DEBUG_FLAGS) $(LIBS)
+CFLAGS=-I$(INCLUDE_DIR) $(WARNING_FLAGS) $(DEBUG_FLAGS) $(LIBS) -m32
 CC=gcc
 
 SRCS := $(shell find $(SRC_DIR) -name "*.c")
@@ -19,7 +19,7 @@ $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 rendezvous-server: $(OBJS)
-	$(CC) $^ -o $(OUT)
+	$(CC) -m32 $^ -o $(OUT)
 
 clean:
 	@rm build/*

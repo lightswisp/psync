@@ -11,7 +11,7 @@
 #include <structs.h>
 #include <show.h>
 #include <peer.h>
-
+r
 bool verbose; //global
 
 static void check_config(int server_family, uint16_t port, bool verbose, char* password){
@@ -76,38 +76,6 @@ int main(int argc, char *argv[]){
 
   clients_t clients;
   bzero(&clients, sizeof(clients));
-
-#define ADD_CLIENT(buf, saddr, clientlen)                                      \
-  if (clients.size < MAX_CLIENTS) {                                            \
-    size_t slot;                                                               \
-    if (!peer_get_free_slot(&clients, &slot)) {                                     \
-      if (verbose)                                                             \
-        logger("client limit is reached!\n");                                  \
-      continue;                                                                \
-    }                                                                          \
-    clients.client[slot].active = true;                                        \
-    clients.client[slot].data = buf;                                           \
-    clients.client[slot].addr = saddr;                                         \
-    clients.client[slot].time = time(NULL);                                    \
-    clients.client[slot].len = clientlen;                                      \
-    clients.size++;                                                            \
-  }
-
-#define PRINT_CLIENTS                                                          \
-  if (verbose)                                                                 \
-    logger("clients we have connected: %lu\n", clients.size);                  \
-  for (size_t i = 0; i < MAX_CLIENTS; i++) {                                   \
-    if (clients.client[i].active) {                                            \
-      char source_ip[INET_ADDRSTRLEN];                                         \
-      inet_ntop(server_family, &(clients.client[i].addr.sin_addr), source_ip,  \
-                INET_ADDRSTRLEN);                                              \
-      if (verbose)                                                             \
-        logger("client<%lu>: ip=%s self_id=0x%x peer_id=0x%x\n", i, source_ip, \
-               clients.client[i].data.self_id,                                 \
-               clients.client[i].data.peer_id);                                \
-    }                                                                          \
-  }
-
   client_data_t buf;
   socklen_t len = sizeof(clientaddr);
   char source_ip[INET_ADDRSTRLEN];
@@ -162,8 +130,36 @@ int main(int argc, char *argv[]){
     if (!peer_is_uniq_client(&clients, &(clientaddr.sin_addr)))
       continue;
 
-    ADD_CLIENT(buf, clientaddr, len)
-    PRINT_CLIENTS
+    /* add */
+    if (clients.size < MAX_CLIENTS) {
+      size_t slot;
+      if (!peer_get_free_slot(&clients, &slot)) {
+        if (verbose)
+          logger("client limit is reached!\n");
+        continue;
+      }
+      clients.client[slot].active = true;
+      clients.client[slot].data = buf;
+      clients.client[slot].addr = clientaddr;
+      clients.client[slot].time = time(NULL);
+      clients.client[slot].len = len;
+      clients.size++;
+    }
+
+    /* some logs */ 
+    if (verbose)
+      logger("clients we have connected: %lu\n", clients.size);
+    for (size_t i = 0; i < MAX_CLIENTS; i++) {
+      if (clients.client[i].active) {
+        char source_ip[INET_ADDRSTRLEN];
+        inet_ntop(server_family, &(clients.client[i].addr.sin_addr), source_ip,
+                  INET_ADDRSTRLEN);
+        if (verbose)
+          logger("client<%lu>: ip=%s self_id=0x%x peer_id=0x%x\n", i, source_ip,
+                 clients.client[i].data.self_id,
+                 clients.client[i].data.peer_id);
+      }
+    }
   }
   return 0;
 }
